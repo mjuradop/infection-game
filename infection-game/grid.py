@@ -1,29 +1,26 @@
 # grid.py
-# Responsible for the grid representation and neighbor lookup.
+# Handles grid creation and neighbor logic
 
-from __future__ import annotations
-from dataclasses import dataclass
 from typing import List, Tuple
 
-Cell = int  # 0=Susceptible, 1=Infected, 2=Recovered, 3=Dead
+Cell = str  # ".", "X", "O", "#"
 
 
-@dataclass
 class Grid:
-    rows: int
-    cols: int
-    cells: List[List[Cell]]
+    def __init__(self, size: int):
+        self.size = size
+        self.cells = [["." for _ in range(size)] for _ in range(size)]
 
-    @staticmethod
-    def create(rows: int, cols: int, fill: Cell = 0) -> "Grid":
-        # Create a rows x cols grid filled with 'fill'
-        return Grid(rows, cols, [[fill for _ in range(cols)] for _ in range(rows)])
+    def in_bounds(self, x: int, y: int) -> bool:
+        # Check if coordinates are inside the grid
+        return 0 <= x < self.size and 0 <= y < self.size
 
-    def in_bounds(self, r: int, c: int) -> bool:
-        # Check if (r,c) is inside the grid
-        return 0 <= r < self.rows and 0 <= c < self.cols
-
-    def neighbors_4(self, r: int, c: int) -> List[Tuple[int, int]]:
-        # Von Neumann neighbors (up, down, left, right)
-        candidates = [(r - 1, c), (r + 1, c), (r, c - 1), (r, c + 1)]
-        return [(rr, cc) for rr, cc in candidates if self.in_bounds(rr, cc)]
+    def neighbors_4(self, x: int, y: int) -> List[Tuple[int, int]]:
+        # Up, Down, Left, Right neighbors
+        directions = [
+            (x - 1, y),
+            (x + 1, y),
+            (x, y - 1),
+            (x, y + 1)
+        ]
+        return [(nx, ny) for nx, ny in directions if self.in_bounds(nx, ny)]
